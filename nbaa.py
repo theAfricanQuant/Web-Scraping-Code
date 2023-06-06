@@ -39,22 +39,24 @@ class NbaaSpider(scrapy.Spider):
             TOV = logs.xpath(".//td[@data-stat = 'tov']/text()").get()
             PF = logs.xpath(".//td[@data-stat = 'pf']/text()").get()
             PTS = logs.xpath(".//td[@data-stat = 'pts']/text()").get()
-            
+
             if name:
-            
+
                 yield{'Athlete':name, 'Pos': pos, 'Date': date, 'Team': team, 'Opp' :opp, 'Game Result': game_result,
                       'MP': MP, 'FG': FG, 'FGA': FGA, 'FG%': FG_pct, '2P':twoP, '2PA': twoPA, '2P%':twoP_pct, '3A':threeP,'3PA':threePA,
                       '3P%':threeP_pct, 'FT':FT, 'FTA':FTA, 'FT%':FT_pct, 'ORB':ORB, 'DRB': DRB, 'TRB': TRB, 'AST': AST, 'STL': STL,
                       'BLK':BLK, 'TOV':TOV, 'PF':PF, 'PTS':PTS}
 
-        
+
         if n <= 1:
             n+=1
         else:
             n = 2
         nn = str(n)
-        next_page = response.xpath('((//p)[7]/a/@href)['+nn+']').get()
-        if next_page:
-            yield scrapy.Request(url = 'https://www.basketball-reference.com'+next_page, callback = self.parse)
+        if next_page := response.xpath(f'((//p)[7]/a/@href)[{nn}]').get():
+            yield scrapy.Request(
+                url=f'https://www.basketball-reference.com{next_page}',
+                callback=self.parse,
+            )
             
             
